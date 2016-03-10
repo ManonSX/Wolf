@@ -1,0 +1,52 @@
+#include "WolfApp.h"
+#include "Moose.h"
+#include "AppFactory.h"
+#include "MooseSyntax.h"
+
+template<>
+InputParameters validParams<WolfApp>()
+{
+  InputParameters params = validParams<MooseApp>();
+
+  params.set<bool>("use_legacy_uo_initialization") = false;
+  params.set<bool>("use_legacy_uo_aux_computation") = false;
+  params.set<bool>("use_legacy_output_syntax") = false;
+
+  return params;
+}
+
+WolfApp::WolfApp(InputParameters parameters) :
+    MooseApp(name, parameters)
+{
+  Moose::registerObjects(_factory);
+  WolfApp::registerObjects(_factory);
+
+  Moose::associateSyntax(_syntax, _action_factory);
+  WolfApp::associateSyntax(_syntax, _action_factory);
+}
+
+WolfApp::~WolfApp()
+{
+}
+
+// External entry point for dynamic application loading
+extern "C" void WolfApp__registerApps() { WolfApp::registerApps(); }
+void
+WolfApp::registerApps()
+{
+  registerApp(WolfApp);
+}
+
+// External entry point for dynamic object registration
+extern "C" void WolfApp__registerObjects(Factory & factory) { WolfApp::registerObjects(factory); }
+void
+WolfApp::registerObjects(Factory & factory)
+{
+}
+
+// External entry point for dynamic syntax association
+extern "C" void WolfApp__associateSyntax(Syntax & syntax, ActionFactory & action_factory) { WolfApp::associateSyntax(syntax, action_factory); }
+void
+WolfApp::associateSyntax(Syntax & /*syntax*/, ActionFactory & /*action_factory*/)
+{
+}
